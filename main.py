@@ -21,7 +21,7 @@ def process_wallet(client: ReferralClient, wallet_address: str) -> dict:
             "referrals": wallet.referrals,
             "created_at": wallet.created_at.isoformat() if wallet.created_at else None,
             "updated_at": wallet.updated_at.isoformat() if wallet.updated_at else None,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         }
         
     except WalletAlreadyRegisteredError:
@@ -29,21 +29,21 @@ def process_wallet(client: ReferralClient, wallet_address: str) -> dict:
             "wallet_address": wallet_address,
             "status": "error",
             "error": "already_registered",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         }
     except InvalidWalletError:
         return {
             "wallet_address": wallet_address,
             "status": "error",
             "error": "invalid_wallet",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         }
     except Exception as e:
         return {
             "wallet_address": wallet_address,
             "status": "error",
             "error": str(e),
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         }
 
 def save_results(results: list, timestamp: str):
