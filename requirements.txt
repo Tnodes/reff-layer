@@ -1,3 +1,4 @@
 wrapper-tls-requests
 colorama
 pyfiglet
+tqdm
