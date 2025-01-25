@@ -9,6 +9,8 @@ from src.utils.banner import print_banner
 
 def process_wallet(client: ReferralClient, wallet_address: str) -> dict:
     """Process a single wallet address"""
+    current_time = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    
     try:
         wallet = client.process_wallet_with_delay(wallet_address)
         
@@ -19,9 +21,9 @@ def process_wallet(client: ReferralClient, wallet_address: str) -> dict:
             "total_points": wallet.total_points,
             "node_points": wallet.node_points,
             "referrals": wallet.referrals,
-            "created_at": wallet.created_at.isoformat() if wallet.created_at else None,
-            "updated_at": wallet.updated_at.isoformat() if wallet.updated_at else None,
-            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            "created_at": wallet.created_at.replace(microsecond=0).isoformat() + "Z" if wallet.created_at else None,
+            "updated_at": wallet.updated_at.replace(microsecond=0).isoformat() + "Z" if wallet.updated_at else None,
+            "timestamp": current_time
         }
         
     except WalletAlreadyRegisteredError:
@@ -29,21 +31,21 @@ def process_wallet(client: ReferralClient, wallet_address: str) -> dict:
             "wallet_address": wallet_address,
             "status": "error",
             "error": "already_registered",
-            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            "timestamp": current_time
         }
     except InvalidWalletError:
         return {
             "wallet_address": wallet_address,
             "status": "error",
             "error": "invalid_wallet",
-            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            "timestamp": current_time
         }
     except Exception as e:
         return {
             "wallet_address": wallet_address,
             "status": "error",
             "error": str(e),
-            "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            "timestamp": current_time
         }
 
 def save_results(results: list, timestamp: str):

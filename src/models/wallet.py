@@ -20,13 +20,20 @@ class Wallet:
     @classmethod
     def from_api_response(cls, data: dict) -> 'Wallet':
         """Create a Wallet instance from API response data"""
+        try:
+            created_at = datetime.strptime(data.get('createdAt', ''), '%Y-%m-%dT%H:%M:%S.%fZ') if data.get('createdAt') else None
+            updated_at = datetime.strptime(data.get('updatedAt', ''), '%Y-%m-%dT%H:%M:%S.%fZ') if data.get('updatedAt') else None
+        except ValueError:
+            # Fallback if milliseconds are not present
+            created_at = datetime.strptime(data.get('createdAt', ''), '%Y-%m-%dT%H:%M:%SZ') if data.get('createdAt') else None
+            updated_at = datetime.strptime(data.get('updatedAt', ''), '%Y-%m-%dT%H:%M:%SZ') if data.get('updatedAt') else None
+            
         return cls(
-            wallet_address=data["walletAddress"],
-            referral_code=data.get("referralCode"),
-            total_points=data.get("totalPoints", 0),
-            node_points=data.get("nodePoints", 0),
-            last_claimed=datetime.fromisoformat(data["lastClaimed"]) if data.get("lastClaimed") else None,
-            referrals=data.get("referrals", []),
-            created_at=datetime.fromisoformat(data["createdAt"]) if data.get("createdAt") else None,
-            updated_at=datetime.fromisoformat(data["updatedAt"]) if data.get("updatedAt") else None
+            wallet_address=data.get('walletAddress', ''),
+            referral_code=data.get('referralCode', ''),
+            total_points=data.get('totalPoints', 0),
+            node_points=data.get('nodePoints', 0),
+            referrals=data.get('referrals', []),
+            created_at=created_at,
+            updated_at=updated_at
         ) 
